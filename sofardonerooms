@@ -903,9 +903,13 @@ eval $finish; exit $res
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 DAY 15: Active Directory:
-Network infrastructures can be mapped out to ensure that access to resources are well managed. (LDAP) Light weight access protocol forms the core of directory services. Providing a mechanism for accessing and managing Directory data to ensure fast searching and retrieving of information about subjects and objects such as users, computers and groups...
+Network infrastructures can be mapped out to ensure that access to resources are well managed. 
+(LDAP) Light weight access protocol forms the core of directory services. 
+Providing a mechanism for accessing and managing Directory data to ensure fast searching and retrieving of information about subjects and objects such as users, computers and groups...
+
 Active Directory (AD): A directory service at the heart of most enterprise networks that stores information about objects in a network.
 Objects like: users(accounts), Groups often with specific permissions, Computers that belong to a domain with AD policies, Printers and other resources which are network-accessible...
+
 Building blocks of AD Architecture:
 -Domains: which are logical groupings of network resources serving as the main boundaries for AD Administration and are identified by Domain boundary and Domain controller name(Everything inside a domain is subject to the same policies and permissions.)
 -Organisational Units(OUs): Containers within a domain that help group objects based on their departments, locations OR functions for easier management...
@@ -922,6 +926,7 @@ Multiple DCs can exist within a Domain for Redundancy. Changes are replicated ac
 
 Group Policy: This allows Administrators to enforce policies across the domain. They are applied to users, computers to enforce password policies, software deployment, firewall settings...
 Group Policy Objects(GPOs): These are containers that hold Group policies which are linked to the entire Domain, an (OU), or a site giving the flexibility in applying policies...
+
 How it's Done:
 1. Open Group policy by gpmc.msc
 2. Right the domain and select " create a GPO in this domain then link it there ". Name the new GPO "Password Policy".
@@ -935,7 +940,7 @@ forged ticket remains valid... This attack requires (4) critical pieces of infor
 2. SID of the Domain
 3. Username of the Domain to Impersonate
 4. KRBTGT account password hash
-DETECTION: Involves monitoring for unusual krbtgt:
+MITIGATION: Involves monitoring for unusual krbtgt:
 --> Event ID 4768: Look for TGT requests for high-previlege accounts.
 --> Event ID 4672: Logs when special previleges(like SeTcbPrevilege) are assigned to a user.
 
