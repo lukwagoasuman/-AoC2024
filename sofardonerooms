@@ -982,14 +982,34 @@ ROLES:
 2. Key Vault Secrets User: Read secret contents BUT only works for key vaults that use the Azure role-based access control permissions model...Allows you to read the contents of a -
 Key vault secret...
 
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+DAY 17: SPLUNK:
 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+DAY 18:
 Exploiting A.I:
 1. Data Poisoning: A.i model is as good as the data it is trained on. If malicious innacurate or misleading data is introduced into the training data of an A.i model while it is being trained or being fine tuned, it will lead to innacurate
 results...
 2. Sensitive Data Disclosure: If Data is not properly sanitised, A.i will provide Data with sensitive information like proprietary information, personally identifiable information, intellectual property... if smart prompts are input, they might then cause a backend exposure OR the confidential data it is being trained on...
 3. Prompt Injection: This attack is common in LLMs and A.I chatbots. A crafted input is provided into an LLM that overrides it's original instructions to get output that is not intended which is 
 similar to control flow hijact...... 
+NOTE: A set of rules and instructions given to a chatbot:  
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+DAY 19: HACKING WITH FRIDA
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+DAY 20: C2 servers
+Whenever a Machine is compromised, The Command and Control Server drops a secret agent also known as a " Payload " into the target machine...
+This payload is meant to obey the instructions from the c2 server . Some of these instructions are: Excuting malicious commands inside the target machine, Exfiltrating Essential files from the files from the system...
+The Payload in Addition to obeying the commands sent by the C2, it has to keep the C2 updated on it's current status BY sending a packet to the C2 evry few seconds/ minutes to let it know it is active -
+and healthy --- This packets are know As: BEACONS...
+1. Getting system information: The attacker may want to know more about the compromised machine to tailor their next moves. This is what we are seeing above.
+2. Executing commands: If the attacker needs to perform specific actions, they can also send commands directly. However, this is less stealthy and easily attracts attention.
+3. Downloading and executing payloads: The attacker can also send additional payloads to the machine containing additional functionality or tools.
+4. Exfiltrating data: This is one of the most common objectives. The program may be instructed to steal valuable data such as sensitive files, credentials, or personal information.
+
+
 
 
 
