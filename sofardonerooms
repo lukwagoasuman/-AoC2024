@@ -1119,8 +1119,37 @@ Salt is a random string of characters added to a password before hashing it...
 
 Password Protected Files:
 " Attacking the confidentiality of Data at Rest " -- Protecting Data at rest is achieved by encrypting the whole disk or specific files on the disk...
-
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+DAY 24: 
+COMMUNICATION PROTOCOLS:
+- MQTT protocol
+- Wireshark to Analyze MQTT protocol
+- RE a simple network Protocol
+
+Many smart devices are connected over the internet to network hence the TERM " INTERNET OF THINGS "
+IOTs refers to the network of physical objects or things that are embedded with software and sensors which allow them to collect and exchange information over ---
+the internet (HVACS) ...For Security, we can add Network isolation and authentication to limit exposure ...
+
+MQTT is a laguage used to speak with IOTs...
+
+MQTT -- Message Queuing Telementary Transport WHILE, MQTT is a protocol AND Eclipse Mosquitto is a software that enables MQTT Communication which is a common -
+Open SourceMQTT broker ...
+
+MQTT CLIENTS: These are iot devices like controllers and sensors, that publish and subscribe to messages using the MQTT protocol like a tempreture sensor can be-
+a client that publishes temperature sensors at different places. An HVAC also acts as a client that subscribes to messages from the temperature sensor and -
+and turns the HVAC system ON or OFF based on the input recieved ...
+
+MQTT BROKER: This will recieve messages from Publishing Clients (MQTT CLIENTS) and distributes them to the Subscribing Clients based on their preferences ...
+
+MQTT TOPICS: Topics are used to classify the different types of messages. Clients can SUBSCRIBE to messages based on their topics of interest.
+" A temperature sensor sneding temperature readings can use the TOPIC of the ROOM temperature WHILE an HVAC controller would subscribe to messages under -
+the topic of the room temperature "...
+
+" A light sensor can publish messages with the topic " light readings ".An HVAC does not need to subscibe to these TOPICS, A light controller would Subscribe to-
+these readings BUT not the TOPIC of ROOM TEMPERATURE ! "
+
+
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
